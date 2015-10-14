@@ -9,26 +9,28 @@ require([], function () {
         vyMult: 1
       });
       this.add('2d, platformerControls, animation');
- 
-      this.addEventListeners();
+	  this.firebase = new Firebase('https://popping-inferno-5579.firebaseio.com/players').child(this.p.playerId);
+	  this.addEventListeners();
     },
     addEventListeners: function () {
-
+	  
+	  
       this.on('hit', function (collision) {
         if (this.p.tagged && collision.obj.isA('Actor') && !collision.obj.p.tagged && !collision.obj.p.invincible) {
-          this.p.socket.emit('tag', { playerId: collision.obj.p.playerId });
           this.p.tagged = false;
           this.p.sheet = 'player';
           this.p.invincible = true;
           this.p.opacity = 0.5;
           this.p.speed = 300;
           this.p.vyMult = 1.5;
+		  this.firebase.set(this.p);
           var temp = this;
           setTimeout(function () {
             temp.p.invincible = false;
             temp.p.opacity = 1;
             temp.p.speed = 200;
             temp.p.vyMult = 1;
+			this.firebase.set(temp.p);
           }, 3000);
         }
       });
@@ -38,6 +40,7 @@ require([], function () {
         this.p.opacity = 0.5;
         this.p.speed = 300;
         this.p.vyMult = 1.5;
+		//this.firebase.set(this.p);
         var temp = this;
         setTimeout(function () {
           temp.p.invincible = false;
@@ -56,8 +59,8 @@ require([], function () {
       } else if (!Q.inputs['down'] && !Q.inputs['up']) {
         this.p.vy = 0;
       }
-
-      this.p.socket.emit('update', { playerId: this.p.playerId, x: this.p.x, y: this.p.y, sheet: this.p.sheet });
+	  //this.firebase.set(this.p);
+      //this.p.socket.emit('update', { playerId: this.p.playerId, x: this.p.x, y: this.p.y, sheet: this.p.sheet });
     }
   });
 
