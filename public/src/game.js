@@ -1,8 +1,4 @@
-//require(['socket.io/socket.io.js']);
- 
 var players = [];
-//var socket = io.connect('http://localhost:8000');
-
 var UiPlayers = document.getElementById("players");
 var Q = Quintus({audioSupported: [ 'wav','mp3' ]})
       .include('Sprites, Scenes, Input, 2D, Anim, Touch, UI, Audio')
@@ -10,7 +6,7 @@ var Q = Quintus({audioSupported: [ 'wav','mp3' ]})
       .enableSound()
       .controls().touch();
  
-Q.gravityY = 0;
+Q.gravityY = 1;
  
 var objectFiles = [
   './src/player'
@@ -34,7 +30,6 @@ require(objectFiles, function () {
 	
 	ref.child('players').child(playerRef.key()).set(player.p);
     stage.insert(player);
-    player.trigger('join');
 	stage.add('viewport').follow(player);
 	
 	playersRef.child(playerRef.key()).onDisconnect().remove();
@@ -49,9 +44,9 @@ require(objectFiles, function () {
 		{			
 			console.log(snapshot.key() + ' ' + playerRef.key());
 			var actor = new Q.Actor(snapshot.val());
-			actor.p.sheet = 'enemy'
 			actor.p.update = true;
 			players.push(actor);
+			//alert('before insert');
 			stage.insert(actor);
 		}
 	});
@@ -62,11 +57,15 @@ require(objectFiles, function () {
 	});
 	playersRef.on('child_changed', function(snapshot) {
 		var actor = players.filter(function(obj) {
+			console.log('found player');
 			return obj.playerId == snapshot.key();
 		})[0];
 		if(actor)
 		{	
-			actor.p = snapshot.val();
+			var data = snapshot.val();
+			actor.player.p.x = data.x;
+			actor.player.p.y = data.y;
+			actor.player.sheet = data.sheet;
 			actor.p.update = true;
 		}
 	});

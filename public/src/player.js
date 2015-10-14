@@ -58,12 +58,15 @@ require([], function () {
     step: function (dt) {
       if (Q.inputs['up']) {
         this.p.vy = -200;
+		this.firebase.set(this.p);
       } else if (Q.inputs['down']) {
         this.p.vy = 200;
+		this.firebase.set(this.p);
       } else if (!Q.inputs['down'] && !Q.inputs['up']) {
         this.p.vy = 0;
+		this.firebase.set(this.p);
       }
-	  this.firebase.set(this.p);
+	  
       //this.p.socket.emit('update', { playerId: this.p.playerId, x: this.p.x, y: this.p.y, sheet: this.p.sheet });
     }
   });
@@ -73,15 +76,6 @@ require([], function () {
 	    this._super(p, {
 	      update: true
 	    });
-	 
-	    var temp = this;
-	    setInterval(function () {
-	      if (!temp.p.update) {
-	        //temp.destroy();
-			//alert('destroy');
-	      }
-	      temp.p.update = false;
-	    }, 3000);
 	  }
   });
 
