@@ -19,12 +19,7 @@ var objectFiles = [
 require(objectFiles, function () {
 
   function setUp (stage) {
-	
-    // socket.on('count', function (data) {
-      // UiPlayers.innerHTML = 'Players: ' + data['playerCount'];
-    // });
-
-	
+	  
 	// Get a Firebase reference
 	ref = new Firebase('https://popping-inferno-5579.firebaseio.com/');
 	
@@ -53,10 +48,11 @@ require(objectFiles, function () {
 		if(snapshot.key() != playerRef.key())
 		{			
 			console.log(snapshot.key() + ' ' + playerRef.key());
-			var player = new Q.Actor(snapshot.val());
-			player.p.sheet = 'enemy'
-			player.p.tagged = true;
-			stage.insert(player);
+			var actor = new Q.Actor(snapshot.val());
+			actor.p.sheet = 'enemy'
+			actor.p.update = true;
+			players.push(actor);
+			stage.insert(actor);
 		}
 	});
 	playersRef.on('child_removed', function (snapshot) {
@@ -65,12 +61,13 @@ require(objectFiles, function () {
 		UiPlayers.innerHTML = 'Players: ' + playerCount;
 	});
 	playersRef.on('child_changed', function(snapshot) {
-		if(snapshot.key() != playerRef.key())
-		{		
-			var temp = new Q.Actor(snapshot.val());
-			temp.p.sheet = 'enemy';
-			stage.insert(temp);
-			console.log(snapshot.key() + ' ' + playerRef.key());
+		var actor = players.filter(function(obj) {
+			return obj.playerId == snapshot.key();
+		})[0];
+		if(actor)
+		{	
+			actor.p = snapshot.val();
+			actor.p.update = true;
 		}
 	});
     // socket.on('connected', function (data) {
@@ -93,25 +90,6 @@ require(objectFiles, function () {
       // }
 
             
-    // });
-
-    // socket.on('updated', function (data) {
-      // var actor = players.filter(function (obj) {
-        // return obj.playerId == data['playerId'];
-      // })[0];
-      // if (actor) {
-        // actor.player.p.x = data['x'];
-        // actor.player.p.y = data['y'];
-        // actor.player.p.sheet = data['sheet'];
-        // actor.player.p.opacity = data['opacity'];
-        // actor.player.p.invincible = data['invincible'];
-        // actor.player.p.tagged = data['tagged'];
-        // actor.player.p.update = true;
-      // } else {
-        // var temp = new Q.Actor({ playerId: data['playerId'], x: data['x'], y: data['y'], sheet: data['sheet'], opacity: data['opacity'], invincible: data['invincible'], tagged: data['tagged'] });
-        // players.push({ player: temp, playerId: data['playerId'] });
-        // stage.insert(temp);
-      // }
     // });
 
     // socket.on('tagged', function (data) {

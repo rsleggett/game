@@ -30,23 +30,27 @@ require([], function () {
             temp.p.opacity = 1;
             temp.p.speed = 200;
             temp.p.vyMult = 1;
-			this.firebase.set(temp.p);
+			temp.firebase.set(temp.p);
+			//alert('hit timeout');
           }, 3000);
         }
       });
  
       this.on('join', function () {
         this.p.invincible = true;
+		this.p.sheet = 'player';
         this.p.opacity = 0.5;
         this.p.speed = 300;
         this.p.vyMult = 1.5;
-		//this.firebase.set(this.p);
+		this.firebase.set(this.p);
         var temp = this;
         setTimeout(function () {
           temp.p.invincible = false;
           temp.p.opacity = 1;
           temp.p.speed = 200;
           temp.p.vyMult = 1;
+		  temp.firebase.set(temp.p);
+		  //alert('join timeout');
         }, 3000);
       });
     },
@@ -59,7 +63,7 @@ require([], function () {
       } else if (!Q.inputs['down'] && !Q.inputs['up']) {
         this.p.vy = 0;
       }
-	  //this.firebase.set(this.p);
+	  this.firebase.set(this.p);
       //this.p.socket.emit('update', { playerId: this.p.playerId, x: this.p.x, y: this.p.y, sheet: this.p.sheet });
     }
   });
@@ -73,7 +77,8 @@ require([], function () {
 	    var temp = this;
 	    setInterval(function () {
 	      if (!temp.p.update) {
-	        temp.destroy();
+	        //temp.destroy();
+			//alert('destroy');
 	      }
 	      temp.p.update = false;
 	    }, 3000);
